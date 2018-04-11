@@ -1,20 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Text;
-using System;
-using UnityWebSocket;
+using Unity3dAzure.WebSockets;
+using UnityEngine;
 
 public class MyTransformHandler : DataHandler {
   // Web Socket JSON data handler
-  public override void OnData(byte[] data) {
-    string jsonText = Encoding.UTF8.GetString(data);
+  public override void OnData (byte[] rawData, string jsonText, Boolean isBinary) {
     try {
-      var obj = JsonUtility.FromJson<MyTransform>(jsonText);
-      RaiseOnReceivedData(this, new MyTransformEventArgs(obj));
+      var obj = JsonUtility.FromJson<MyTransform> (jsonText);
+      RaiseOnReceivedData (this, new MyTransformEventArgs (obj));
     } catch (ArgumentException exception) {
-      Debug.LogWarningFormat("Failed to parse JSON string. Reason: {0} \n'{1}'", exception.Message, jsonText);
+      Debug.LogWarningFormat ("Failed to parse JSON string. Reason: {0} \n'{1}'", exception.Message, jsonText);
     }
   }
-
 }
