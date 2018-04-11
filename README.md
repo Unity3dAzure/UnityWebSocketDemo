@@ -2,6 +2,7 @@
 
 Web Socket samples for Unity:
 
+* Bing Speech web socket demo (requires Key)
 * Echo message demo
 * Transform JSON demo
 
@@ -15,7 +16,7 @@ Or if you've already done a git clone then use:
 
 ## Demos
 
-### How to run the Web Socket echo demo
+### How to run the localhost Web Socket echo demo
 
 1.  Clone the [Web Socket server repo](https://github.com/deadlyfingers/UnityWebSocket-server) and run the [echo server](https://github.com/deadlyfingers/UnityWebSocket-server/blob/master/server-echo.js).
 
@@ -23,7 +24,7 @@ Or if you've already done a git clone then use:
 
 2.  Open Unity project's _Echo Demo_ scene in Unity and hit play!
 
-### How to run the Web Socket 3d transform JSON demo
+### How to run the localhost Web Socket 3d transform JSON demo
 
 1.  Clone the [Web Socket server repo](https://github.com/deadlyfingers/UnityWebSocket-server) and run the [json server](https://github.com/deadlyfingers/UnityWebSocket-server/blob/master/server-json.js).
 

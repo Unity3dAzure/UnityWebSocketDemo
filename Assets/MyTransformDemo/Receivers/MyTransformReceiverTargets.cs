@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityWebSocket;
+using Unity3dAzure.WebSockets;
 
 // This receiver acts as a controller for multiple gameobject targets
 public class MyTransformReceiverTargets : DataReceiver {

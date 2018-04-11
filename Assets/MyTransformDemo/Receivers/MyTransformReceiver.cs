@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityWebSocket;
+using Unity3dAzure.WebSockets;
 
 public class MyTransformReceiver : DataReceiver {
   // Local store for incoming object data
