@@ -107,6 +107,7 @@ namespace Unity3dAzure.BingSpeech {
     private void RequestTokenAndConnect () {
       if (string.IsNullOrEmpty (key)) {
         Debug.LogError ("Bing Speech Key required");
+        this.enabled = false;
         return;
       }
       Debug.Log ("Requesting token...");
@@ -151,7 +152,7 @@ namespace Unity3dAzure.BingSpeech {
 
     // Returns UUID in "no-dash" format
     public static string GetId () {
-      return Guid.NewGuid ().ToString ("N"); //.Replace("-", string.Empty); //"123e4567e89b12d3a456426655440000";
+      return Guid.NewGuid ().ToString ("N");
     }
 
     private void SendSpeechConfig () {

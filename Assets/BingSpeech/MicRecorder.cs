@@ -30,7 +30,16 @@ namespace Unity3dAzure.BingSpeech {
     private float intervalTimer = 0;
     private int lastPosition = 0;
 
-    private void Update () {
+    [SerializeField]
+    private Boolean autoRecord = false;
+
+    void Start () {
+      if (autoRecord) {
+        StartRecording ();
+      }
+    }
+
+    void Update () {
       if (!isStarted) {
         return;
       }
