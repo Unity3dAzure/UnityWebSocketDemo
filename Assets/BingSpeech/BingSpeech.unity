@@ -898,7 +898,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   key: 
   languageMode: 6
-  AutoConnect: 0
+  AutoConnect: 1
 --- !u!4 &1124061416
 Transform:
   m_ObjectHideFlags: 0

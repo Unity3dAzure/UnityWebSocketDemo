@@ -2,16 +2,16 @@
 
 Web Socket samples for Unity:
 
-* Bing Speech web socket demo (requires Key)
+* [Bing Speech API](https://portal.azure.com) web socket demo (requires Key)
 * Echo message demo
 * Transform JSON demo
 
 ## :octocat: Download instructions
 
-This project contains git submodule dependencies so use:
+This project contains git submodule dependencies so use:  
 `git clone --recursive https://github.com/Unity3dAzure/UnityWebSocketDemo.git`
 
-Or if you've already done a git clone then use:
+Or if you've already done a git clone then use:  
 `git submodule update --init --recursive`
 
 ## Demos

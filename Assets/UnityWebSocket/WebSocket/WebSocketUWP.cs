@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +11,7 @@ using Windows.Networking.Sockets;
 using Windows.Security.Cryptography.Certificates;
 using Windows.Storage.Streams;
 using Windows.Web;
+using UnityEngine;
 
 namespace Unity3dAzure.WebSockets {
   public class WebSocketUWP : IWebSocket {
@@ -25,19 +25,16 @@ namespace Unity3dAzure.WebSockets {
     public event OnClose OnClose;
 
     private bool isAttached = false;
+    private bool isOpened = false;
 
     private string url;
     private List<KeyValuePair<string, string>> headers;
 
     public void ConfigureWebSocket(string url) {
-      ConfigureWebSocket(url, null, null, 0);
+      ConfigureWebSocket(url, null);
     }
 
     public void ConfigureWebSocket(string url, List<KeyValuePair<string, string>> headers) {
-      ConfigureWebSocket(url, headers, null, 0);
-    }
-
-    public void ConfigureWebSocket(string url, List<KeyValuePair<string, string>> headers, string origin, uint waitTime) {
       if (socket != null) {
         throw new Exception("WebSocket is already configured!");
       }
@@ -57,18 +54,19 @@ namespace Unity3dAzure.WebSockets {
 
     public async void ConnectAsync() {
       if (socket == null) {
-        Debug.WriteLine("Configure MessageWebSocket");
+        Debug.Log("Configure MessageWebSocket");
         ConfigureWebSocket(url, headers);
       }
       AttachHandlers();
       try {
         await socket.ConnectAsync(uri);
         dataWriter = new DataWriter(socket.OutputStream);
+        isOpened = true;
         RaiseOpen();
       } catch (Exception ex) {
         WebErrorStatus status = WebSocketError.GetStatus(ex.GetBaseException().HResult);
         if (status.Equals(WebErrorStatus.Unknown)) {
-          Debug.WriteLine("An unknown WebErrorStatus exception occurred.");
+          Debug.LogError("An unknown WebErrorStatus exception occurred.");
         } else {
           RaiseError("Error: MessageWebSocket failed to connect: " + status.ToString());
         }
@@ -81,6 +79,7 @@ namespace Unity3dAzure.WebSockets {
         return;
       }
       try {
+        isOpened = false;
         socket.Close(1000, "User closed");
       } catch (Exception ex) {
         RaiseError(ex.Message);
@@ -88,7 +87,7 @@ namespace Unity3dAzure.WebSockets {
     }
 
     public bool IsOpen() {
-      if (socket != null && isAttached) {
+      if (socket != null && isOpened) {
         return true;
       }
       return false;
@@ -104,15 +103,6 @@ namespace Unity3dAzure.WebSockets {
 
     public async void SendAsync(byte[] data, Action<bool> completed = null) {
       await SendAsyncData(data, completed);
-    }
-
-    public void SendAsync(FileInfo fileInfo, Action<bool> completed = null) {
-      using (FileStream fs = fileInfo.OpenRead()) {
-        byte[] buffer = new byte[1024];
-        while (fs.Read(buffer, 0, buffer.Length) > 0) {
-          SendAsync(buffer, completed);
-        }
-      }
     }
 
     private async Task SendAsyncText(string message, Action<bool> completed = null) {
@@ -153,7 +143,7 @@ namespace Unity3dAzure.WebSockets {
       }
     }
 
-    #region WebSocket Handlers
+#region WebSocket Handlers
 
     private void AttachHandlers() {
       if (isAttached) {
@@ -169,11 +159,9 @@ namespace Unity3dAzure.WebSockets {
         return;
       }
       isAttached = false;
-      try {
+      if (isOpened) {
         socket.MessageReceived -= HandleOnMessage;
         socket.Closed -= HandleOnClose;
-      } catch (Exception ex) {
-        Debug.WriteLine("Socket closed: " + ex.Message);
       }
     }
 
@@ -182,6 +170,8 @@ namespace Unity3dAzure.WebSockets {
       dataWriter = null;
       socket.Dispose();
       socket = null;
+      isAttached = false;
+      isOpened = false;
     }
 
     private void RaiseError(string message) {
@@ -226,7 +216,7 @@ namespace Unity3dAzure.WebSockets {
       Dispose();
     }
 
-    #endregion
+#endregion
 
     private Uri WebSocketUri(string url) {
       Uri webSocketUri;
