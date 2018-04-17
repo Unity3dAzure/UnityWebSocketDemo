@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Unity3dAzure.WebSockets;
 using UnityEngine;
 using UnityEngine.Networking;
-using WebSocketSharp;
+//using WebSocketSharp;
 
 using KeyValue = System.Collections.Generic.KeyValuePair<string, string>;
 
@@ -53,11 +53,7 @@ namespace Unity3dAzure.BingSpeech {
 
       // Config Websocket
       ConfigureEndpoint (languageMode); // sets WebSocketUri
-      Origin = "https://speech.platform.bing.com";
       Headers = new List<UnityKeyValue> ();
-
-      // Validate Server Certificate
-      ValidateServerCertificate ();
 
       if (AutoConnect) {
         RequestTokenAndConnect ();
@@ -73,7 +69,7 @@ namespace Unity3dAzure.BingSpeech {
       idleTimer += Time.deltaTime;
       timer += Time.deltaTime;
       if (idleTimer > MAX_IDLE_DURATION || timer > MAX_DURATION) {
-        Debug.Log ("Stop and close web socket - reached max duration.");
+        Debug.Log ("Stop and close web socket. Reached max duration.");
         Close ();
         return;
       }
@@ -94,7 +90,7 @@ namespace Unity3dAzure.BingSpeech {
       if (AutoConnect && isStarted) {
         Debug.LogWarning ("Changing language is not supported while AutoConnect is turned on.");
       }
-      if (isActivated) {
+      if (isAttached) {
         Debug.LogWarning ("Changing language is not supported after connection.");
       }
       string languageParam = language.ToString ().Replace ("_", "-");
@@ -132,14 +128,15 @@ namespace Unity3dAzure.BingSpeech {
     IEnumerator RequestToken () {
       using (UnityWebRequest www = UnityWebRequest.Post ("https://api.cognitive.microsoft.com/sts/v1.0/issueToken", "")) {
         www.SetRequestHeader ("Ocp-Apim-Subscription-Key", key);
-        yield return www.Send ();
+        www.chunkedTransfer = false;
+        yield return www.SendWebRequest ();
 
         if (www.isNetworkError || www.isHttpError) {
           Debug.Log (www.error);
         } else {
           // Save token
           token = www.downloadHandler.text;
-          //Debug.Log ("Token:\n" + www.downloadHandler.text);
+          Debug.Log ("Token:\n" + www.downloadHandler.text);
           SetHeadersAndConnect ();
         }
       }
@@ -196,27 +193,30 @@ namespace Unity3dAzure.BingSpeech {
       return sb.ToString ();
     }
 
-    public void SendAssetsFile (string wavFilePath) {
-      var fileDir = Path.GetDirectoryName (wavFilePath);
-      var filename = Path.GetFileNameWithoutExtension (wavFilePath);
+    public void SendStreamingAssetsFile (string filename) {
+      StartCoroutine(LoadStreamingAssetFileBytes(filename, LoadStreamingAssetFileBytesComplete));
+    }
 
-      var dirPath = Application.dataPath + "/" + fileDir;
-      if (!Directory.Exists (dirPath)) {
-        Debug.LogError ("Couldn't find directory: " + dirPath);
+    private IEnumerator LoadStreamingAssetFileBytes(string filename, Action<byte[]> callback) {
+      string filePath = Path.Combine(Application.streamingAssetsPath, filename);
+      if (!File.Exists(filePath)) {
+        Debug.LogError("No file found in Unity 'Assets/StreamingAssets' directory: " + filePath);
+        callback(null);
+      } else if (filePath.Contains("://")) {
+        UnityWebRequest www = UnityWebRequest.Get(filePath);
+        yield return www.SendWebRequest();
+        callback(www.downloadHandler.data);
+      } else {
+        callback(File.ReadAllBytes(filePath));
+      }
+    }
+
+    private void LoadStreamingAssetFileBytesComplete(byte[] fileData) {
+      if (fileData == null) {
         return;
       }
-      DirectoryInfo dir = new DirectoryInfo (dirPath);
-      FileInfo[] files = dir.GetFiles (filename + ".wav");
-      if (files.Length == 0) {
-        Debug.LogError ("Couldn't find a .wav file: " + filename);
-        return;
-      }
-
-      FileInfo file = files[0];
-      byte[] wavData = File.ReadAllBytes (file.FullName);
-      Debug.Log ("Send audio file bytes... " + file.FullName);
-
-      SendAudio (wavData);
+      Debug.Log("Send audio file bytes... " + fileData.Length);
+      SendAudio(fileData);
     }
 
     public void NewTurn () {
@@ -268,19 +268,19 @@ namespace Unity3dAzure.BingSpeech {
       }
     }
 
-    private void startTimers () {
+    private void StartTimers () {
       isSocketStarted = true;
       timer = 0;
       idleTimer = 0;
     }
 
-    private void cancelTimers () {
+    private void CancelTimers () {
       isSocketStarted = false;
       timer = 0;
       idleTimer = 0;
     }
 
-    private void resetIdleTimer () {
+    private void ResetIdleTimer () {
       idleTimer = 0;
     }
 
@@ -305,7 +305,7 @@ namespace Unity3dAzure.BingSpeech {
     }
 
     public override void Close () {
-      cancelTimers ();
+      CancelTimers ();
       DisconnectWebSocket ();
     }
 
@@ -315,28 +315,31 @@ namespace Unity3dAzure.BingSpeech {
 
     protected override void OnWebSocketOpen (object sender, EventArgs e) {
       Debug.Log ("Web socket is open");
-      startTimers ();
+      StartTimers ();
       SendSpeechConfig ();
     }
 
-    protected override void OnWebSocketClose (object sender, CloseEventArgs e) {
+    protected override void OnWebSocketClose (object sender, WebSocketCloseEventArgs e) {
       Debug.Log ("Web socket closed with reason: " + e.Reason + " Time: " + timer);
       if (!e.WasClean) {
         DisconnectWebSocket ();
-        return;
       }
+      DettachHandlers();
     }
 
-    protected override void OnWebSocketMessage (object sender, MessageEventArgs e) {
+    protected override void OnWebSocketMessage (object sender, WebSocketMessageEventArgs e) {
       Debug.LogFormat ("Web socket {1} message:\n{0}", e.Data, e.IsBinary ? "binary" : "string");
 
       // Renew activity timer
-      resetIdleTimer ();
+      ResetIdleTimer ();
 
-      string text = Encoding.UTF8.GetString (e.RawData);
+      // Only process text messages
+      if (string.IsNullOrEmpty(e.Data)) {
+        return;
+      }
 
       // Handle "turn.end" message as a new request id will be need to be generated!
-      var match = Regex.Match (text, "^Path:([A-z\\.]+)", RegexOptions.Multiline);
+      var match = Regex.Match (e.Data, "^Path:([A-z\\.]+)", RegexOptions.Multiline);
       if (match.Groups.Count == 2 && match.Groups[1].Value.Equals ("turn.end")) {
         NewTurn ();
       }
@@ -347,9 +350,9 @@ namespace Unity3dAzure.BingSpeech {
       }
     }
 
-    protected override void OnWebSocketError (object sender, WebSocketSharp.ErrorEventArgs e) {
+    protected override void OnWebSocketError (object sender, WebSocketErrorEventArgs e) {
       Debug.LogError ("Web socket error: " + e.Message);
-      cancelTimers ();
+      CancelTimers ();
       DisconnectWebSocket ();
     }
 

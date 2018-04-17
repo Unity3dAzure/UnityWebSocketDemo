@@ -4,4 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/BingSpeech/BingSpeech.unity
+    guid: 215b1068a5e9a429aabcc6ab194ba2e7

@@ -312,14 +312,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1124061415}
-        m_MethodName: SendAssetsFile
+        m_MethodName: SendStreamingAssetsFile
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: BingSpeech/weather.wav
+          m_StringArgument: weather.wav
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
@@ -896,9 +896,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab8a42a0fb79a4971a8d8b31b3e10aaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: 25a948831c5542fd82409c8202c80796
+  key: 
   languageMode: 6
-  AutoConnect: 1
+  AutoConnect: 0
 --- !u!4 &1124061416
 Transform:
   m_ObjectHideFlags: 0
@@ -993,7 +993,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -1091,6 +1091,7 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
