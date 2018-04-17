@@ -39,3 +39,8 @@ sysinfo.txt
 #/.vscode
 #omnisharp.json
 #.editorconfig
+
+# UWP
+*.pfx
+*.pfx.meta
+/UWP

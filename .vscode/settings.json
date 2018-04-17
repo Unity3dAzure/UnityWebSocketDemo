@@ -2,7 +2,9 @@
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
-  "editor.rulers": [140],
+  "editor.rulers": [
+    140
+  ],
   "search.exclude": {
     "**/.git": true,
     "**/obj": true,
@@ -12,8 +14,8 @@
   "editor.formatOnSave": true,
   "omnisharp.useMono": true,
   "files.exclude": {
-    "**/.editorconfig": true,
-    "**/omnisharp.json": true,
+    "**/.editorconfig": false,
+    "**/omnisharp.json": false,
     "**/.DS_Store": true,
     "**/.git": true,
     "**/.gitignore": false,
