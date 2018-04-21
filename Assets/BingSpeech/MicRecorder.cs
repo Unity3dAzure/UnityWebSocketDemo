@@ -83,7 +83,7 @@ namespace Unity3dAzure.BingSpeech {
       byte[] wavBytes = GetAudioClipDataAsWavBytes ();
       //Debug.Log ("Fire AudioClip bytes: " + wavBytes.Length);
       // Fire recorded wav bytes
-      if (OnRecordedData != null) {
+      if (OnRecordedData != null && wavBytes != null) {
         OnRecordedData (wavBytes);
       }
     }
@@ -92,6 +92,7 @@ namespace Unity3dAzure.BingSpeech {
       int currentPosition = Microphone.GetPosition (mic);
       if (currentPosition == 0) {
         Debug.LogWarning ("No audio recording");
+        return null;
       }
       byte[] wavBytes = WavDataUtility.FromAudioClip (audioClip, currentPosition, lastPosition, includeWavFileHeader);
       includeWavFileHeader = false; // wav file header is required only once

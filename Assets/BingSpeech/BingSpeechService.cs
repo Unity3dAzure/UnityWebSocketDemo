@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Unity3dAzure.LUIS;
 using Unity3dAzure.WebSockets;
 using UnityEngine;
 using UnityEngine.Networking;
-//using WebSocketSharp;
 
 using KeyValue = System.Collections.Generic.KeyValuePair<string, string>;
 
@@ -44,6 +44,7 @@ namespace Unity3dAzure.BingSpeech {
     const string CarriageReturn = "\r\n";
 
     private Boolean isStarted = false;
+    private LUISApp luisApp;
 
     #region Bing Speech Web Socket connection
 
@@ -54,6 +55,8 @@ namespace Unity3dAzure.BingSpeech {
       // Config Websocket
       ConfigureEndpoint (languageMode); // sets WebSocketUri
       Headers = new List<UnityKeyValue> ();
+
+      luisApp = gameObject.GetComponent<LUISApp> ();
 
       if (AutoConnect) {
         RequestTokenAndConnect ();
@@ -75,15 +78,22 @@ namespace Unity3dAzure.BingSpeech {
       }
     }
 
-    void OnEnable () {
-      MicRecorder.OnRecordedData += ReceivedWavBytes;
-      MicRecorder.OnRecordingStopped += NewTurn;
-    }
+    void OnEnable () { }
 
     void OnDisable () {
+      DisconnectWebSocket ();
+    }
+
+    private void SubscribeMic () {
+      MicRecorder.OnRecordedData += ReceivedWavBytes;
+      MicRecorder.OnRecordingStopped += NewTurn;
+      Debug.Log ("Subscribed to Mic recorded data");
+    }
+
+    private void UnsubscribeMic () {
       MicRecorder.OnRecordedData -= ReceivedWavBytes;
       MicRecorder.OnRecordingStopped -= NewTurn;
-      DisconnectWebSocket ();
+      Debug.Log ("Unsubscribed from Mic recorded data");
     }
 
     public void ConfigureEndpoint (LanguageMode language) {
@@ -155,6 +165,7 @@ namespace Unity3dAzure.BingSpeech {
     private void SendSpeechConfig () {
       // Send a speech.config message only once per connection (and before sending any audio messages)
       if (isSpeechConfigSent) {
+        SubscribeMic ();
         return;
       }
 
@@ -175,6 +186,7 @@ namespace Unity3dAzure.BingSpeech {
       }
       isSpeechConfigSent = true;
       Debug.Log ("Speech config sent - ready!");
+      SubscribeMic ();
     }
 
     public static string GenerateMessage (string body, params KeyValuePair<string, string>[] headers) {
@@ -194,29 +206,29 @@ namespace Unity3dAzure.BingSpeech {
     }
 
     public void SendStreamingAssetsFile (string filename) {
-      StartCoroutine(LoadStreamingAssetFileBytes(filename, LoadStreamingAssetFileBytesComplete));
+      StartCoroutine (LoadStreamingAssetFileBytes (filename, LoadStreamingAssetFileBytesComplete));
     }
 
-    private IEnumerator LoadStreamingAssetFileBytes(string filename, Action<byte[]> callback) {
-      string filePath = Path.Combine(Application.streamingAssetsPath, filename);
-      if (!File.Exists(filePath)) {
-        Debug.LogError("No file found in Unity 'Assets/StreamingAssets' directory: " + filePath);
-        callback(null);
-      } else if (filePath.Contains("://")) {
-        UnityWebRequest www = UnityWebRequest.Get(filePath);
-        yield return www.SendWebRequest();
-        callback(www.downloadHandler.data);
+    private IEnumerator LoadStreamingAssetFileBytes (string filename, Action<byte[]> callback) {
+      string filePath = Path.Combine (Application.streamingAssetsPath, filename);
+      if (!File.Exists (filePath)) {
+        Debug.LogError ("No file found in Unity 'Assets/StreamingAssets' directory: " + filePath);
+        callback (null);
+      } else if (filePath.Contains ("://")) {
+        UnityWebRequest www = UnityWebRequest.Get (filePath);
+        yield return www.SendWebRequest ();
+        callback (www.downloadHandler.data);
       } else {
-        callback(File.ReadAllBytes(filePath));
+        callback (File.ReadAllBytes (filePath));
       }
     }
 
-    private void LoadStreamingAssetFileBytesComplete(byte[] fileData) {
+    private void LoadStreamingAssetFileBytesComplete (byte[] fileData) {
       if (fileData == null) {
         return;
       }
-      Debug.Log("Send audio file bytes... " + fileData.Length);
-      SendAudio(fileData);
+      Debug.Log ("Send audio file bytes... " + fileData.Length);
+      SendAudio (fileData);
     }
 
     public void NewTurn () {
@@ -306,6 +318,7 @@ namespace Unity3dAzure.BingSpeech {
 
     public override void Close () {
       CancelTimers ();
+      UnsubscribeMic ();
       DisconnectWebSocket ();
     }
 
@@ -324,7 +337,8 @@ namespace Unity3dAzure.BingSpeech {
       if (!e.WasClean) {
         DisconnectWebSocket ();
       }
-      DettachHandlers();
+      UnsubscribeMic ();
+      DettachHandlers ();
     }
 
     protected override void OnWebSocketMessage (object sender, WebSocketMessageEventArgs e) {
@@ -334,7 +348,7 @@ namespace Unity3dAzure.BingSpeech {
       ResetIdleTimer ();
 
       // Only process text messages
-      if (string.IsNullOrEmpty(e.Data)) {
+      if (string.IsNullOrEmpty (e.Data)) {
         return;
       }
 
@@ -342,6 +356,16 @@ namespace Unity3dAzure.BingSpeech {
       var match = Regex.Match (e.Data, "^Path:([A-z\\.]+)", RegexOptions.Multiline);
       if (match.Groups.Count == 2 && match.Groups[1].Value.Equals ("turn.end")) {
         NewTurn ();
+      } else if (match.Groups.Count == 2 && match.Groups[1].Value.Equals ("speech.phrase")) {
+        // If a LUIS app script is attached then hand-off "speech.phrase" message as LUIS query request
+        if (luisApp != null) {
+          string jsonBody = e.Data.Substring (e.Data.IndexOf ("{"));
+          SpeechPhrase phrase = SpeechMessageHandler.ParseSpeechPhrase (jsonBody);
+          if (!string.IsNullOrEmpty (phrase.DisplayText)) {
+            Debug.Log ("Send phrase to LUIS app: " + phrase.DisplayText);
+            luisApp.AddQueryToQueue (phrase.DisplayText);
+          }
+        }
       }
 
       // Raise web socket data handler event
