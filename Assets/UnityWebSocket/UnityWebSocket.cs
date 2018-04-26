@@ -75,7 +75,7 @@ namespace Unity3dAzure.WebSockets {
       SendBytes (data, callback);
     }
 
-    public void SendInputText (InputField inputField) {
+    public virtual void SendInputText (InputField inputField) {
       SendText (inputField.text);
     }
 
@@ -95,8 +95,10 @@ namespace Unity3dAzure.WebSockets {
 
       if (_ws == null) {
         var customHeaders = new List<KeyValuePair<string, string>>();
-        foreach (UnityKeyValue header in Headers) {
-          customHeaders.Add(new KeyValuePair<string, string>(header.key, header.value));
+        if (Headers != null) {
+          foreach (UnityKeyValue header in Headers) {
+            customHeaders.Add(new KeyValuePair<string, string>(header.key, header.value));
+          }
         }
 
         Debug.Log ("Create Web Socket: " + WebSocketUri);
