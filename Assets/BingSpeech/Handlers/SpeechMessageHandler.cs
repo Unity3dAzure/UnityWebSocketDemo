@@ -29,10 +29,11 @@ namespace Unity3dAzure.BingSpeech {
       }
 
       // detect message json body
-      match = Regex.Match (text, "^\\n?(\\{.*\\})", RegexOptions.Multiline | RegexOptions.Singleline);
-      if (match.Groups.Count == 2 && match.Groups[1].Value.Length > 0) {
-        body = match.Groups[1].Value.Trim ();
-      }
+      // match = Regex.Match (text, "^\\n?(\\{.*\\})", RegexOptions.Multiline | RegexOptions.Singleline);
+      // if (match.Groups.Count == 2 && match.Groups[1].Value.Length > 0) {
+      //   body = match.Groups[1].Value.Trim ();
+      // }
+      body = text.Substring (text.IndexOf ("{"));
 
       if (String.IsNullOrEmpty (path) || String.IsNullOrEmpty (requestId) || String.IsNullOrEmpty (body)) {
         Debug.LogError ("Failed to parse speech message header and body:\n" + text);
