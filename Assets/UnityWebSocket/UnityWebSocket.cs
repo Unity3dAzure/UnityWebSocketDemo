@@ -105,7 +105,7 @@ namespace Unity3dAzure.WebSockets {
 #if ENABLE_WINMD_SUPPORT
         Debug.Log ("Using UWP Web Socket");
         _ws = new WebSocketUWP();
-#else
+#elif UNITY_EDITOR || ENABLE_MONO
         Debug.Log("Using Mono Web Socket");
         _ws = new WebSocketMono();
 #endif

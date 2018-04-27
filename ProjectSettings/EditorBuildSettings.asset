@@ -5,6 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
+    path: Assets/BingSpeech/BingSpeech and LUIS.unity
+    guid: 0127df845fa2c4ba0bc617af219f429d
+  - enabled: 0
     path: Assets/BingSpeech/BingSpeech.unity
     guid: 215b1068a5e9a429aabcc6ab194ba2e7
+  - enabled: 1
+    path: Assets/BotFramework/BotService.unity
+    guid: 659b29a48b0ba8f47b917bd6b4d86f58

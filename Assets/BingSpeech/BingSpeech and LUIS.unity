@@ -549,9 +549,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Convex: 0
-  m_InflateMesh: 0
+  m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!33 &479117553
@@ -1395,6 +1395,7 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
@@ -1843,14 +1844,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1958660019}
-        m_MethodName: TestChangePosition
+        m_MethodName: TestChangeColour
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: center
+          m_StringArgument: red
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
@@ -2315,7 +2316,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-      m_TypeName: Unity3dAzure.LUIS.LUISEvent, Assembly-CSharp, Version=1.0.2.3112,
+      m_TypeName: Unity3dAzure.LUIS.LUISEvent, Assembly-CSharp, Version=1.0.2.42662,
         Culture=neutral, PublicKeyToken=null
   - topScoringIntent: Change Size
     entityType: Sizes
@@ -2333,7 +2334,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-      m_TypeName: Unity3dAzure.LUIS.LUISEvent, Assembly-CSharp, Version=1.0.2.3112,
+      m_TypeName: Unity3dAzure.LUIS.LUISEvent, Assembly-CSharp, Version=1.0.2.42662,
         Culture=neutral, PublicKeyToken=null
   - topScoringIntent: Change Position
     entityType: Positions
@@ -2351,7 +2352,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-      m_TypeName: Unity3dAzure.LUIS.LUISEvent, Assembly-CSharp, Version=1.0.2.3112,
+      m_TypeName: Unity3dAzure.LUIS.LUISEvent, Assembly-CSharp, Version=1.0.2.42662,
         Culture=neutral, PublicKeyToken=null
 --- !u!4 &1958660018
 Transform:

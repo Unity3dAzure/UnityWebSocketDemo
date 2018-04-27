@@ -25,7 +25,7 @@ namespace Unity3dAzure.BotFramework {
     private bool AutoStart = true;
 
     [SerializeField]
-    private bool AutoConnect = false;
+    private bool AutoConnect = true;
 
 
     // Use this for initialization
@@ -50,8 +50,8 @@ namespace Unity3dAzure.BotFramework {
         www.chunkedTransfer = false;
         yield return www.SendWebRequest();
 
-        if (www.isNetworkError || www.isHttpError) {
-          Debug.Log("UWR Error: " + www.error);
+        if (!string.IsNullOrEmpty(www.error)) {
+          Debug.Log("UWR Error: " + www.error + " status:" + www.responseCode.ToString());
         } else {
           Debug.Log("Request ready:\n" + www.downloadHandler.text);
           try {
@@ -100,7 +100,7 @@ namespace Unity3dAzure.BotFramework {
         www.method = UnityWebRequest.kHttpVerbPOST;
         yield return www.SendWebRequest();
 
-        if (www.isNetworkError || www.isHttpError) {
+        if (!string.IsNullOrEmpty(www.error)) {
           Debug.Log("UWR Error: " + www.error + " status:" + www.responseCode.ToString());
         } else {
           Debug.Log("Sent message to bot:\n" + www.downloadHandler.text);

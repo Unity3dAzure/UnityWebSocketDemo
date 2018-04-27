@@ -557,7 +557,7 @@ PlayerSettings:
   scriptingDefineSymbols: {}
   platformArchitecture: {}
   scriptingBackend:
-    Metro: 1
+    Metro: 2
   incrementalIl2cppBuild: {}
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 0
@@ -574,7 +574,7 @@ PlayerSettings:
   metroCertificateNotAfter: 80f91dc392f0d401
   metroApplicationDescription: UnityWebSocketDemo
   wsaImages: {}
-  metroTileShortName: 
+  metroTileShortName: UnityWebSocketDemo
   metroCommandLineArgsFile: 
   metroTileShowName: 0
   metroMediumTileShowName: 0
