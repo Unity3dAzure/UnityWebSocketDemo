@@ -75,7 +75,7 @@ namespace Unity3dAzure.WebSockets {
       SendBytes (data, callback);
     }
 
-    public void SendInputText (InputField inputField) {
+    public virtual void SendInputText (InputField inputField) {
       SendText (inputField.text);
     }
 
@@ -95,15 +95,17 @@ namespace Unity3dAzure.WebSockets {
 
       if (_ws == null) {
         var customHeaders = new List<KeyValuePair<string, string>>();
-        foreach (UnityKeyValue header in Headers) {
-          customHeaders.Add(new KeyValuePair<string, string>(header.key, header.value));
+        if (Headers != null) {
+          foreach (UnityKeyValue header in Headers) {
+            customHeaders.Add(new KeyValuePair<string, string>(header.key, header.value));
+          }
         }
 
         Debug.Log ("Create Web Socket: " + WebSocketUri);
 #if ENABLE_WINMD_SUPPORT
         Debug.Log ("Using UWP Web Socket");
         _ws = new WebSocketUWP();
-#else
+#elif UNITY_EDITOR || ENABLE_MONO
         Debug.Log("Using Mono Web Socket");
         _ws = new WebSocketMono();
 #endif

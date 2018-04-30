@@ -1,3 +1,4 @@
+#if UNITY_EDITOR || ENABLE_MONO
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -153,3 +154,4 @@ namespace Unity3dAzure.WebSockets {
 
   }
 }
+#endif

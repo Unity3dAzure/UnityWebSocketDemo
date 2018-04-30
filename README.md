@@ -4,6 +4,7 @@
 
 * [Bing Speech](https://portal.azure.com) web socket demo (requires Key)
 * [Bing Speech](https://portal.azure.com) and [LUIS app](https://www.luis.ai/applications) for using natural language to target and control Unity GameObject properties.
+* [Bot Framework](https://portal.azure.com) [Direct Line](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-channel-connect-directline) web socket demo (requires Direct Line key)
 
 ### Localhost Web Socket samples for Unity
 
@@ -31,6 +32,14 @@ Or if you've already done a git clone then use:
 4.  Under 'Publish > Resources and Keys' section select **'Add Key'**
 
 5.  Copy the key's **Endpoint** ending in 'q=' into the Unity _LUISApp_ script.
+
+### How to run the Bot Framework demo
+
+1. Create an [Azure Bot Service](https://portal.azure.com).
+
+2. In the Azure Bot Service select **Channels** and add a [Direct Line](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-channel-connect-directline) channel.
+
+3. Copy the Direct Line secret key into the Unity _BotService_ script.
 
 ### How to run the localhost Web Socket echo demo
 
