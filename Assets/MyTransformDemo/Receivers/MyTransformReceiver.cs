@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,8 +6,8 @@ using Unity3dAzure.WebSockets;
 
 public class MyTransformReceiver : DataReceiver {
   // Local store for incoming object data
-  private List<MyTransform> data;
-  private MyTransform currentValue;
+  private List<TransformData> data;
+  private TransformData currentValue;
 
   [SerializeField]
   private float AnimationTime = 0.5f; // seconds
@@ -46,20 +46,11 @@ public class MyTransformReceiver : DataReceiver {
 
       float x, y, z, rate;
       rate = currentTime / AnimationTime;
-      x = Mathf.Lerp(originalPosition.x, currentValue.position.x, rate);
-      y = Mathf.Lerp(originalPosition.y, currentValue.position.y, rate);
-      z = Mathf.Lerp(originalPosition.z, currentValue.position.z, rate);
-      transform.localPosition = new Vector3(x, y, z);
 
-      x = Mathf.Lerp(originalRotation.eulerAngles.x, currentValue.rotation.x, rate);
-      y = Mathf.Lerp(originalRotation.eulerAngles.y, currentValue.rotation.y, rate);
-      z = Mathf.Lerp(originalRotation.eulerAngles.z, currentValue.rotation.z, rate);
-      transform.localRotation = Quaternion.Euler(x, y, z);
+      transform.localPosition = Vector3.Lerp(originalPosition, currentValue.position, rate);
+      transform.localRotation = Quaternion.Lerp(originalRotation, currentValue.rotation, rate);
+      transform.localScale = Vector3.Lerp(originalScale, currentValue.scale, rate);
 
-      x = Mathf.Lerp(originalScale.x, currentValue.scale.x, rate);
-      y = Mathf.Lerp(originalScale.y, currentValue.scale.y, rate);
-      z = Mathf.Lerp(originalScale.z, currentValue.scale.z, rate);
-      transform.localScale = new Vector3(x, y, z);
     } else {
       currentTime = 0;
       reset();
@@ -82,7 +73,7 @@ public class MyTransformReceiver : DataReceiver {
 
     // Add object data into local store
     if (data == null) {
-      data = new List<MyTransform>();
+      data = new List<TransformData>();
     }
     data.Add(myArgs.Data);
   }

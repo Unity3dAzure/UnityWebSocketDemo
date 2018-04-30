@@ -11,8 +11,8 @@ public class MyTransformReceiverTargets : DataReceiver {
   public List<GameObject> targets;
 
   // Local store for incoming object data
-  private List<MyTransform> data;
-  private MyTransform currentValue;
+  private List<TransformData> data;
+  private TransformData currentValue;
 
   // props
   private List<MyTargetProps> props = new List<MyTargetProps>();
@@ -70,14 +70,10 @@ public class MyTransformReceiverTargets : DataReceiver {
           animationTime = 0;
         }
         rate = currentTime / animationTime;
-        target.transform.localPosition = Vector3.Lerp(t.localPosition, new Vector3(currentValue.position.x, currentValue.position.y, currentValue.position.z), rate);
 
-        x = Mathf.Lerp(t.localRotation.eulerAngles.x, currentValue.rotation.x, rate);
-        y = Mathf.Lerp(t.localRotation.eulerAngles.y, currentValue.rotation.y, rate);
-        z = Mathf.Lerp(t.localRotation.eulerAngles.z, currentValue.rotation.z, rate);
-        target.transform.localRotation = Quaternion.Euler(x, y, z);
-
-        target.transform.localScale = Vector3.Lerp(t.localScale, new Vector3(currentValue.scale.x, currentValue.scale.y, currentValue.scale.z), rate);
+        target.transform.localPosition = Vector3.Lerp(t.position, currentValue.position, rate);
+        target.transform.localRotation = Quaternion.Lerp(t.rotation, currentValue.rotation, rate);
+        target.transform.localScale = Vector3.Lerp(t.scale, currentValue.scale, rate);
 
         i++;
       }
@@ -107,7 +103,7 @@ public class MyTransformReceiverTargets : DataReceiver {
 
     // Add object data into local store
     if (data == null) {
-      data = new List<MyTransform>();
+      data = new List<TransformData>();
     }
     data.Add(myArgs.Data);
   }
