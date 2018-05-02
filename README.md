@@ -60,7 +60,7 @@ Or if you've already done a git clone then use:
 ## Dependencies
 
 * [UnityWebSocket](https://github.com/Unity3DAzure/UnityWebSocket)
-  * [WebSocket-Sharp](https://github.com/deadlyfingers/websocket-sharp)
+  * [WebSocket-Sharp* forked for supporting Unity and custom headers](https://github.com/deadlyfingers/websocket-sharp)
 
 Refer to the download instructions above to install these submodules.
 

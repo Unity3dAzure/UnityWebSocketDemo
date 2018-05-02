@@ -17,7 +17,7 @@ namespace Unity3dAzure.WebSockets {
     protected string WebSocketUri;
     protected List<UnityKeyValue> Headers;
 
-    private IWebSocket _ws;
+    protected IWebSocket _ws;
 
     protected bool isAttached = false;
 
@@ -41,9 +41,6 @@ namespace Unity3dAzure.WebSockets {
 
     protected virtual void OnWebSocketClose (object sender, WebSocketCloseEventArgs e) {
       Debug.Log ("Web socket closed with reason: " + e.Reason);
-      if (!e.WasClean) {
-        DisconnectWebSocket ();
-      }
       DettachHandlers();
     }
 
@@ -93,7 +90,7 @@ namespace Unity3dAzure.WebSockets {
         return;
       }
 
-      if (_ws == null) {
+      if (_ws == null || !_ws.IsConfigured()) {
         var customHeaders = new List<KeyValuePair<string, string>>();
         if (Headers != null) {
           foreach (UnityKeyValue header in Headers) {

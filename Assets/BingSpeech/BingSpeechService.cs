@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -334,9 +334,6 @@ namespace Unity3dAzure.BingSpeech {
 
     protected override void OnWebSocketClose (object sender, WebSocketCloseEventArgs e) {
       Debug.Log ("Web socket closed with reason: " + e.Reason + " Time: " + timer);
-      if (!e.WasClean) {
-        DisconnectWebSocket ();
-      }
       UnsubscribeMic ();
       DettachHandlers ();
     }

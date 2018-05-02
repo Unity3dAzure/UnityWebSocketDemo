@@ -46,7 +46,8 @@ namespace Unity3dAzure.WebSockets {
 
     public void ConnectAsync() {
       if (socket == null) {
-        throw new Exception("WebSocket needs to be configured!");
+        Debug.LogError("WebSocket not configured!");
+        return;
       }
       AttachHandlers();
       socket.ConnectAsync();
@@ -57,6 +58,13 @@ namespace Unity3dAzure.WebSockets {
         return;
       }
       socket.CloseAsync();
+    }
+
+    public bool IsConfigured() {
+      if (socket == null) {
+        return false;
+      }
+      return true;
     }
 
     public bool IsOpen() {
@@ -102,6 +110,12 @@ namespace Unity3dAzure.WebSockets {
       socket.OnClose -= HandleOnClose;
     }
 
+    private void Dispose() {
+      ((IDisposable)socket).Dispose();
+      socket = null;
+      isAttached = false;
+    }
+
     private void HandleOnError(object sender, WebSocketSharp.ErrorEventArgs e) {
       if (OnError != null) {
         OnError.Invoke(sender, new WebSocketErrorEventArgs(e.Message));
@@ -126,6 +140,7 @@ namespace Unity3dAzure.WebSockets {
         OnClose.Invoke(sender, new WebSocketCloseEventArgs(e.Reason, e.Code));
       }
       UnattachHandlers();
+      Dispose();
     }
 
 #endregion

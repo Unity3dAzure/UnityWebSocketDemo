@@ -1140,9 +1140,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51103b4cc4d4d8d499414c92978aa8b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  directLineKey: 
+  DirectLineSecretKey: 
+  Token: 
   UserName: UnityUser
-  AutoStart: 1
   AutoConnect: 1
 --- !u!4 &1473831253
 Transform:
